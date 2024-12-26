@@ -109,10 +109,6 @@ void Layout() {
 	}
 }
 
-void HandleClayErrors(Clay_ErrorData errorData) {
-    printf("%s", errorData.errorText.chars);
-}
-
 int main(void) {
 	// First we set up our cairo surface.
 	// In this example we will use the PDF backend,
@@ -135,11 +131,11 @@ int main(void) {
 	Clay_Cairo_Initialize(cr);
 
 	uint64_t totalMemorySize = Clay_MinMemorySize();
-	Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
+	Clay_Arena clayMemory = (Clay_Arena) { .label = CLAY_STRING("Clay Memory Arena"), .memory = malloc(totalMemorySize), .capacity = totalMemorySize };
 	Clay_SetMeasureTextFunction(Clay_Cairo_MeasureText);
 
 	// We initialize Clay with the same size
-	Clay_Initialize(clayMemory, (Clay_Dimensions) { width, height }, (Clay_ErrorHandler) { HandleClayErrors });
+	Clay_Initialize(clayMemory, (Clay_Dimensions) { width, height });
 
 	Clay_BeginLayout();
 
